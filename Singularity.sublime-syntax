@@ -1,0 +1,43 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+first_line_match: 
+  - 'Bootstrap: [a-z\-]+'
+file_extensions:
+  - 'Singularity(\..+)?'
+scope: source.singularity_container
+variables:
+  keywords_header: (Bootstrap|From|Stage|OSVersion|MirrorURL|Include|Library)
+  header: ^({{keywords_header}}:)\s*(.+)
+  section_other: 'files|labels|help'
+  section_shell: 'environment|post|runscript|setup|startscript|test'
+contexts:
+  main:
+    - include: comments
+    - include: header_ctx
+    - match: '(Bootstrap|From|Stage): ([a-z]+)'
+      captures:
+        1: keyword.control
+        2: entity.name.enum.tag-digest
+    - match: ^%({{section_other}})
+      scope: keyword.control.singularity_container.section
+    - include: shell_section
+  header_ctx:
+    - match: "{{header}}"
+      captures:
+        1: keyword.control
+        2: entity.name.enum.tag-digest
+  comments:
+    - match: ^(\s*)((#).*$\n?)
+      comment: comment.line
+      captures:
+        1: punctuation.whitespace.comment.leading.singularity_container
+        2: comment.singularity_container
+        3: punctuation.definition.comment.singularity_container
+  shell_section:
+    - match: ^%({{section_shell}})
+      scope: keyword.control.singularity_container.section
+      push: Packages/ShellScript/Bash.sublime-syntax
+      with_prototype:
+        - match: (?=%[a-z]+)
+          pop: true

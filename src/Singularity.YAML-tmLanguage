@@ -1,0 +1,32 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+---
+name: Singularity Definition File
+scopeName: source.singularity_container
+fileTypes: [Singularity]
+uuid: 1e6e5d38-e76a-11e9-888d-3c15c2c2816c
+
+patterns:
+- comment: Comments
+  name: comment.line
+  match: ^(\s*)((#).*$\n?)
+  captures:
+    '1': {name: punctuation.whitespace.comment.leading.singularity_container}
+    '2': {name: comment.singularity_container}
+    '3': {name: punctuation.definition.comment.singularity_container}
+- comment: Header
+  name: keyword.control.singularity_container.header
+  match: ^((Bootstrap|From|Stage|OSVersion|MirrorURL|Include|Library):)\s*(.+)
+  captures:
+    '1': {name: keyword.control}
+    '2': {name: entity.name.enum.tag-digest}
+- comment: Section (other)
+  name: keyword.control.singularity_container.section_other
+  match: ^%(files|labels|help)\s*
+  captures:
+    '1': {name: keyword.control}
+- comment: Section (shell)
+  name: keyword.control.singularity_container.section_shell
+  begin: ^%(environment|post|runscript|setup|startscript|test)\s*
+  patterns:
+    - include: source.shell
+  end: ^(?=%[a-z]+)
